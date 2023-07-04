@@ -10,6 +10,46 @@ function ensureDate(d) {
   return d instanceof Date ? d : new Date(d)
 }
 
+function getCoupDays(settlement, maturity, frequency, basis) {
+  if (basis === 1) {
+    let date = lastCoupDateBeforeSettlement(settlement, maturity)
+    let nextDate = utils.parseDate(date)
+    nextDate.setMonth(nextDate.getMonth() + 12 / frequency)
+
+    return dateTime.DATEDIF(date, nextDate, 'D')
+  }
+
+  switch (basis) {
+    case 0:
+    case 2:
+    case 4:
+      return 360
+    case 3:
+      return 365
+    default:
+      return error.num
+  }
+}
+
+function lastCoupDateBeforeSettlement(settlement, maturity) {
+  let date = utils.parseDate(maturity)
+  date.setFullYear(settlement.getFullYear())
+
+  if (date < settlement) date.setFullYear(date.getFullYear() + 1)
+
+  while (date > settlement) date.setMonth(date.addMonth() + -12 / frequency)
+
+  return date
+}
+
+function validateFreq(frequency) {
+  frequency = utils.parseNumber(frequency)
+
+  if (frequency !== 1 && frequency !== 2 && frequency !== 4) return error.value
+
+  return frequency
+}
+
 /**
  * Returns the accrued interest for a security that pays periodic interest.
  *
@@ -1305,8 +1345,17 @@ export function PPMT(rate, per, nper, pv, fv, type) {
  * @param {*} basis Optional. The type of day count basis to use.
  * @returns
  */
-export function PRICE() {
-  throw new Error('PRICE is not implemented')
+export function PRICE(settlement, maturity, rate, yld, redemption, frequency, basis) {
+  settlement = utils.parseDate(settlement)
+  maturity = utils.parseDate(maturity)
+  frequency = validateFreq(frequency)
+  basis = utils.parseNumber(basis) || 0
+
+  if (utils.anyError(settlement, maturity, frequency, basis)) return error.value
+
+  let tmpFrequency = frequency
+
+  let e = getCoupDays(settlement, maturity, frequency, basis)
 }
 
 /**
