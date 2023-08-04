@@ -49,6 +49,17 @@ function validateBasis(basis) {
   return basis
 }
 
+function dateTo30DaysMode(date) {
+  let settYear = date.getFullYear()
+  let settMonth = date.getMonth()
+  let settDay = Math.min(date.getDate(), 30)
+  if (date.getDate() >= dateTime.DAY(new Date(settYear, settMonth, 0))) {
+    settDay = 30
+  }
+
+  return new Date(settYear, settMonth, settDay)
+}
+
 /**
  * Returns the accrued interest for a security that pays periodic interest.
  *
@@ -187,6 +198,8 @@ export function COUPDAYBS(settlement, maturity, frequency, basis) {
     return error.num
   }
 
+  settlement = dateTo30DaysMode(settlement)
+  maturity = dateTo30DaysMode(maturity)
   let date = lastCoupDateBeforeSettlement(settlement, maturity, frequency)
 
   return dateTime.DATEDIF(date, settlement, 'D')

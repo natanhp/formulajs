@@ -277,9 +277,19 @@ describe('Financial', () => {
     expect(financial.AMORLINC).to.throw('AMORLINC is not implemented')
   })
 
-  // TODO: implement
   it('COUPDAYBS', () => {
-    expect(financial.COUPDAYBS).to.throw('COUPDAYBS is not implemented')
+    expect(financial.COUPDAYBS('13/25/2011', '11/15/2011', 2, 1)).to.equal(error.value)
+    expect(financial.COUPDAYBS('01/25/2011', '13/15/2011', 2, 1)).to.equal(error.value)
+    expect(financial.COUPDAYBS('01/25/2011', '11/15/2011', 0, 1)).to.equal(error.num)
+    expect(financial.COUPDAYBS('01/25/2011', '11/15/2011', 1, 1)).to.equal(71)
+    expect(financial.COUPDAYBS('01/25/2011', '11/15/2011', 2, 1)).to.equal(71)
+    expect(financial.COUPDAYBS('01/25/2011', '11/15/2011', 3, 1)).to.equal(error.num)
+    expect(financial.COUPDAYBS('01/25/2011', '11/15/2011', 4, 1)).to.equal(71)
+    expect(financial.COUPDAYBS('01/25/2011', '11/15/2011', 5, 1)).to.equal(error.num)
+    expect(financial.COUPDAYBS('01/25/2011', '11/15/2011', 2, -1)).to.equal(error.num)
+    expect(financial.COUPDAYBS('01/25/2011', '11/15/2011', 2, 2)).to.equal(71)
+    expect(financial.COUPDAYBS('01/25/2011', '11/15/2011', 2, 3)).to.equal(71)
+    expect(financial.COUPDAYBS('01/25/2011', '11/15/2011', 2, 4)).to.equal(70)
   })
 
   it('COUPDAYS', () => {
