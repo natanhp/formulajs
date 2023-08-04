@@ -173,8 +173,23 @@ export function AMORLINC() {
  * @param {*} basis Optional. The type of day count basis to use.
  * @returns
  */
-export function COUPDAYBS() {
-  throw new Error('COUPDAYBS is not implemented')
+export function COUPDAYBS(settlement, maturity, frequency, basis) {
+  basis = validateBasis(basis)
+  frequency = validateFrequency(frequency)
+  settlement = utils.parseDate(settlement)
+  maturity = utils.parseDate(maturity)
+
+  if (utils.anyError(settlement, maturity)) {
+    return error.value
+  }
+
+  if (utils.anyError(frequency, basis) || settlement >= maturity) {
+    return error.num
+  }
+
+  let date = lastCoupDateBeforeSettlement(settlement, maturity, frequency)
+
+  return dateTime.DATEDIF(date, settlement, 'D')
 }
 
 /**
